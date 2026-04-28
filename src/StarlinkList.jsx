@@ -54,7 +54,7 @@ export default function StarlinkList() {
             {starlinks
                 .filter((s) => s.latitude != null)
                 .map((s) => (
-                <Marker position={[s.latitude, s.longitude]} icon={satIcon}>
+                <Marker key={s.id} position={[s.latitude, s.longitude]} icon={satIcon}>
                     <Popup>
                         <h1>{s.spaceTrack.OBJECT_NAME}</h1>
                         <p>{s.spaceTrack.OBJECT_ID}</p>
