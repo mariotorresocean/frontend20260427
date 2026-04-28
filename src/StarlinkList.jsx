@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react"
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import 'leaflet/dist/leaflet.css'
+import L from 'leaflet'
 
 export default function StarlinkList() {
     const [starlinks, setStarlinks] = useState([]);
+    const satIcon = L.divIcon({
+        html: '<div style="font-size:18px; line-height:1;">🛰️</div>',
+        className: '',
+        iconSize: [24,24],
+        iconAnchor:[12,12]
+    })
+
     useEffect(() => {
         fetch('https://api.spacexdata.com/v4/starlink/query', {
             method: 'POST',
@@ -26,8 +34,11 @@ export default function StarlinkList() {
             {starlinks
                 .filter((s) => s.latitude != null)
                 .map((s) => (
-                <Marker position={[s.latitude, s.longitude]}>
-                    <Popup content={s.spaceTrack.OBJECT_NAME}/>
+                <Marker position={[s.latitude, s.longitude]} icon={satIcon}>
+                    <Popup>
+                        <h1>{s.spaceTrack.OBJECT_NAME}</h1>
+                        <p>{s.spaceTrack.OBJECT_ID}</p>
+                    </Popup>
                 </Marker>
             ))}
         </MapContainer>
