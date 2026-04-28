@@ -5,14 +5,16 @@ export default function StarlinkList() {
     useEffect(() => {
         fetch('https://api.spacexdata.com/v4/starlink/query', {
             method: 'POST',
-            body: {
-            "query": {},
-            "options": { limit: 20 }
-            }
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                "query": {},
+                "options": { limit: 20 }
+            })
         })
         .then((response) => response.json())
         .then((data) => setStarlinks(data.docs))
         .catch((error) => console.error('Deu bug:', error))
+        
     }, [])
 
     return <>
@@ -21,6 +23,7 @@ export default function StarlinkList() {
             {starlinks.map((s) => (
                 <li>{s.spaceTrack.OBJECT_NAME}</li>
             ))}
+            {console.log(starlinks)}
         </ul>
     </>
 }
