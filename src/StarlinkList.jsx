@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 
 export default function StarlinkList() {
+    const inicializacao = useRef(true);
     const [starlinks, setStarlinks] = useState([]);
     const satIcon = L.divIcon({
         html: '<div style="font-size:18px; line-height:1;">🛰️</div>',
@@ -12,7 +13,7 @@ export default function StarlinkList() {
         iconAnchor:[12,12]
     })
 
-    useEffect(() => {
+    function fetchStarlinks() {
         fetch('https://api.spacexdata.com/v4/starlink/query', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -24,7 +25,13 @@ export default function StarlinkList() {
         .then((response) => response.json())
         .then((data) => setStarlinks(data.docs))
         .catch((error) => console.error('Deu bug:', error))
-        
+    }
+ 
+    useEffect(() => {
+        if (inicializacao.current) {
+            fetchStarlinks();
+            inicializacao.current = false;
+        }
     }, [])
     const position = [-3.0925454075226755, -60.01846372698568]
     return <>
