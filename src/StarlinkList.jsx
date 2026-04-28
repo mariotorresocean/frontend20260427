@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { MapContainer, TileLayer } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import 'leaflet/dist/leaflet.css'
 
 export default function StarlinkList() {
@@ -21,11 +21,15 @@ export default function StarlinkList() {
     const position = [-3.0925454075226755, -60.01846372698568]
     return <>
         <h1>Lista de satelites</h1>
-            {/* {starlinks.map((s) => (
-                <li>{s.spaceTrack.OBJECT_NAME} Lat:{s.latitude} Long:{s.longitude}</li>
-            ))} */}
         <MapContainer center={position} zoom={1} style={{height: '60vh', width:'100%'}}>
             <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+            {starlinks
+                .filter((s) => s.latitude != null)
+                .map((s) => (
+                <Marker position={[s.latitude, s.longitude]}>
+                    <Popup content={s.spaceTrack.OBJECT_NAME}/>
+                </Marker>
+            ))}
         </MapContainer>
     </>
 }
