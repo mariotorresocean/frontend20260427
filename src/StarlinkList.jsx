@@ -4,6 +4,8 @@ import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 
 export default function StarlinkList() {
+    const [pagina, setPagina] = useState(1);
+    const [hasNextPage, setHasNextPage] = useState(true);
     const inicializacao = useRef(true);
     const [starlinks, setStarlinks] = useState([]);
     const satIcon = L.divIcon({
@@ -13,23 +15,34 @@ export default function StarlinkList() {
         iconAnchor:[12,12]
     })
 
-    function fetchStarlinks() {
+    function fetchStarlinks(pageNumber) {
         fetch('https://api.spacexdata.com/v4/starlink/query', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 "query": {},
-                "options": { limit: 100 }
+                "options": { page: pageNumber, limit: 200 }
             })
         })
         .then((response) => response.json())
-        .then((data) => setStarlinks(data.docs))
+        .then((data) => {
+            setStarlinks(data.docs)
+            setHasNextPage(data.hasNextPage)
+        })
         .catch((error) => console.error('Deu bug:', error))
+    }
+
+    function carregarProximaPagina() {
+        if (hasNextPage) {
+            setPagina(pagina + 1);
+            console.log('Vou carregar '+pagina);
+            fetchStarlinks(pagina);
+        }
     }
  
     useEffect(() => {
         if (inicializacao.current) {
-            fetchStarlinks();
+            fetchStarlinks(pagina);
             inicializacao.current = false;
         }
     }, [])
@@ -49,6 +62,9 @@ export default function StarlinkList() {
                 </Marker>
             ))}
         </MapContainer>
+        <button onClick={carregarProximaPagina}>
+            Próxima página
+        </button>
     </>
 }
 
