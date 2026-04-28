@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react"
+import { MapContainer, TileLayer } from "react-leaflet";
+import 'leaflet/dist/leaflet.css'
 
 export default function StarlinkList() {
     const [starlinks, setStarlinks] = useState([]);
@@ -8,7 +10,7 @@ export default function StarlinkList() {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 "query": {},
-                "options": { limit: 20 }
+                "options": { limit: 100 }
             })
         })
         .then((response) => response.json())
@@ -16,15 +18,15 @@ export default function StarlinkList() {
         .catch((error) => console.error('Deu bug:', error))
         
     }, [])
-
+    const position = [-3.0925454075226755, -60.01846372698568]
     return <>
         <h1>Lista de satelites</h1>
-        <ul>
-            {starlinks.map((s) => (
-                <li>{s.spaceTrack.OBJECT_NAME}</li>
-            ))}
-            {console.log(starlinks)}
-        </ul>
+            {/* {starlinks.map((s) => (
+                <li>{s.spaceTrack.OBJECT_NAME} Lat:{s.latitude} Long:{s.longitude}</li>
+            ))} */}
+        <MapContainer center={position} zoom={1} style={{height: '60vh', width:'100%'}}>
+            <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+        </MapContainer>
     </>
 }
 
